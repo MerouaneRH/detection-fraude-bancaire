@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# La CI utilise uniquement data/sample et le générateur synthétique : jamais de réseau ni de creditcard.csv.
+# Les tests sur creditcard.csv sont ignorés quand data/raw/creditcard.csv est absent.
+
+jobs:
+  scala:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - name: sbt test
+        run: sbt -batch test
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Installer les dépendances
+        run: uv sync --frozen
+      - name: pytest
+        run: uv run pytest -q
