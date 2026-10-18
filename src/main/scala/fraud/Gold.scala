@@ -34,6 +34,20 @@ object Gold {
       .drop("_z")
   }
 
+  /** Variante sans état pour le streaming : le montant est comparé à un seuil absolu (200) au lieu de l'historique de la carte. */
+  def scoreStateless(silver: DataFrame): DataFrame = {
+    val foreign = col("country") =!= HomeCountry
+    val night = hour(col("ts")) < 6
+    val highAmount = col("amount") >= 200.0
+    silver
+      .withColumn(
+        "score",
+        when(foreign, 0.4).otherwise(0.0) + when(night, 0.3).otherwise(0.0) +
+          least(col("amount") / 200.0, lit(1.0)) * 0.3
+      )
+      .withColumn("rule", concat_ws("+", when(foreign, "foreign_country"), when(night, "night"), when(highAmount, "high_amount")))
+  }
+
   def alerts(scored: DataFrame, threshold: Double): DataFrame =
     scored
       .filter(col("score") >= threshold)
