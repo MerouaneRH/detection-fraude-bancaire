@@ -24,6 +24,14 @@ def gold_dir() -> Path:
     return live if live.exists() else ROOT / "data" / "sample" / "gold"
 
 
+def display_path(path: Path) -> str:
+    """Chemin relatif au projet quand c'est possible (n'expose pas le dossier personnel)."""
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return path.name
+
+
 def load_table(name: str, base: Path | str | None = None) -> pd.DataFrame:
     if name not in TABLES:
         raise ValueError(f"table inconnue : {name}")

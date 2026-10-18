@@ -37,9 +37,13 @@ object TransactionGenerator {
     Vector.tabulate(n) { i =>
       val fraud = fraudIdx.contains(i)
       val day = rnd.nextInt(Days)
-      val hour = if (fraud) rnd.nextInt(6) else 8 + rnd.nextInt(14) // fraude surtout la nuit
+      // La fraude est plus fréquente la nuit et à l'étranger, sans l'être exclusivement :
+      // des achats légitimes ont aussi lieu de nuit (5 %) ou en voyage (4 %).
+      val night = if (fraud) rnd.nextDouble() < 0.7 else rnd.nextDouble() < 0.05
+      val hour = if (night) rnd.nextInt(6) else 6 + rnd.nextInt(16)
       val second = rnd.nextInt(3600)
-      val country = if (fraud && rnd.nextDouble() < 0.8) pick(rnd, ForeignCountries) else HomeCountry
+      val foreign = if (fraud) rnd.nextDouble() < 0.7 else rnd.nextDouble() < 0.04
+      val country = if (foreign) pick(rnd, ForeignCountries) else HomeCountry
       val base = math.exp(3.0 + 0.9 * rnd.nextGaussian()) // log-normale, médiane ~20
       val amount = round2(if (fraud) base * (3.0 + 5.0 * rnd.nextDouble()) else base)
 

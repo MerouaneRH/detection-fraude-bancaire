@@ -23,11 +23,11 @@ dossier de fichiers ┘                     Spark batch ou Structured Streaming 
 | Jeu de données | Méthode | Précision | Rappel |
 |---|---|---|---|
 | `creditcard.csv` réel (284 807 transactions, 492 fraudes) | RandomForest MLlib, 80/20, graine 42 | 0,892 | 0,776 |
-| Synthétique (20 000 transactions, 2 % de fraude) | Règles : pays étranger, nuit, montant | 1,000 | 0,833 |
+| Synthétique (20 000 transactions, 2 % de fraude) | Règles : pays étranger, nuit, montant, seuil 0,5 | 0,637 | 0,738 |
 
 Lecture honnête de ces chiffres :
 - Le résultat réel vient d'un **seul découpage** train/test, sur environ une centaine de fraudes dans le test. L'intervalle d'incertitude est large. Une validation croisée serait plus solide.
-- Le résultat synthétique est **flatteur par construction** : le générateur ne produit jamais de transaction normale de nuit ni à l'étranger. Il valide la mécanique du pipeline, pas la qualité d'un détecteur.
+- Sur le synthétique, les règles font un **compromis** : seuil 0,5 → précision 0,64 et rappel 0,74 ; seuil 0,7 → précision 0,82 et rappel 0,54. Aucun seuil n'atteint 0,80 et 0,70 ensemble, parce que le générateur inclut des achats légitimes de nuit (5 %) et à l'étranger (4 %). Le critère de précision ≥ 0,80 et rappel ≥ 0,70 est tenu par le modèle sur `creditcard.csv`, pas par les règles.
 - Les variables V1 à V28 de `creditcard.csv` sont anonymisées par PCA : le modèle n'est pas explicable en termes métier.
 
 ## Choix techniques
@@ -74,7 +74,7 @@ docs/                   spec.md (8 critères d'acceptation), architecture.md
 
 ## Limites connues
 
-- La CI n'a pas encore tourné sur GitHub : elle a été rejouée localement depuis un clone propre (23 tests Scala réussis, 2 ignorés sans `creditcard.csv`, 13 tests Python réussis).
+- La CI n'a pas encore tourné sur GitHub : les mêmes commandes ont été rejouées localement. Les 2 tests sur `creditcard.csv` sont ignorés quand le fichier est absent.
 - L'état de `dropDuplicates` croît sans limite en streaming. Une production le bornerait avec un watermark.
 - Aucun déploiement ni conseil de décision : le projet détecte et expose, il ne bloque rien.
 

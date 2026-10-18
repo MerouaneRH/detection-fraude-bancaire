@@ -32,7 +32,7 @@ object Pipeline {
     scored.unpersist()
   }
 
-  /** Arguments : <outDir> [n=20000] [seed=42] [fraudRate=0.02] [creditcard.csv] */
+  /** Arguments : <outDir> [n=20000] [seed=42] [fraudRate=0.02] [creditcard.csv] [seuilRègles=0.6] */
   def main(args: Array[String]): Unit = {
     require(args.nonEmpty, "usage: Pipeline <outDir> [n] [seed] [fraudRate] [creditcard.csv]")
     val spark = SparkSession.builder().master("local[*]").appName("fraud-pipeline").config("spark.ui.enabled", "false").getOrCreate()
@@ -44,6 +44,7 @@ object Pipeline {
         seed = args.lift(2).map(_.toLong).getOrElse(42L),
         fraudRate = args.lift(3).map(_.toDouble).getOrElse(0.02),
         outDir = args(0),
+        threshold = args.lift(5).map(_.toDouble).getOrElse(Gold.DefaultThreshold),
         creditcardPath = creditcard
       )
     } finally spark.stop()

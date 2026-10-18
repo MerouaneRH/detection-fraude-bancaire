@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions._
 object Gold {
 
   val HomeCountry = "FR"
-  val DefaultThreshold = 0.6
+  val DefaultThreshold = 0.5 // meilleur compromis précision/rappel mesuré sur le synthétique (voir GoldSpec)
 
   /** Ajoute `score` (0 à 1) et `rule` (signaux déclenchés) à la couche silver.
     * Signaux : pays étranger (0,4), heure de nuit (0,3), montant anormal pour la carte (0 à 0,3).

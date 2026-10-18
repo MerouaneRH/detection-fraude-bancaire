@@ -12,7 +12,7 @@ def load(name: str, folder: str):
 
 st.title("Détection de fraude bancaire")
 folder = str(gold_data.gold_dir())
-st.caption(f"Tables gold lues dans `{folder}`")
+st.caption(f"Tables gold lues dans `{gold_data.display_path(gold_data.gold_dir())}`")
 
 try:
     fraud_by_hour = load("fraud_by_hour", folder)
@@ -42,7 +42,14 @@ left, right = st.columns(2)
 with left:
     with st.container(border=True):
         st.subheader("Taux de fraude par pays")
-        st.bar_chart(gold_data.rate_by_country(filtered), x="country", y="fraud_rate", alt="Taux de fraude par pays")
+        st.bar_chart(
+            gold_data.rate_by_country(filtered),
+            x="country",
+            y="fraud_rate",
+            x_label="Pays",
+            y_label="Taux de fraude",
+            alt="Taux de fraude par pays",
+        )
 with right:
     with st.container(border=True):
         st.subheader("Taux de fraude par heure de la journée")
@@ -50,6 +57,8 @@ with right:
             gold_data.rate_by_hour_of_day(filtered),
             x="hour_of_day",
             y="fraud_rate",
+            x_label="Heure de la journée",
+            y_label="Taux de fraude",
             alt="Taux de fraude par heure de la journée",
         )
 
