@@ -1,0 +1,17 @@
+[project]
+name = "detection-fraude-bancaire"
+version = "0.1.0"
+description = "Tableau de bord Streamlit sur les tables gold du pipeline Spark/Scala"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.40",
+    "duckdb>=1.1",
+    "pandas>=2.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["app"]
+testpaths = ["tests"]

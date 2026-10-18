@@ -3,3 +3,6 @@ data/raw/
 target/
 .venv/
 __pycache__/
+data/gold/
+.DS_Store
+.pytest_cache/
